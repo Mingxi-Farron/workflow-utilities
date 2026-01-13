@@ -17,6 +17,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+tmpclaude-*
 
 # Local config overrides
 config/local.yaml
