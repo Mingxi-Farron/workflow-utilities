@@ -1,0 +1,35 @@
+{
+  "git_guard": {
+    "blocked": "Git operation blocked",
+    "confirm_prompt": "Do you want to commit these changes?",
+    "confirmed": "Committed",
+    "rejected": "OK, commit cancelled",
+    "force_blocked": "Force push blocked (unless explicitly requested)",
+    "hard_reset_blocked": "Hard reset blocked (unless explicitly requested)"
+  },
+  "mode_control": {
+    "current": "Current mode: {mode}",
+    "switched": "Switched to {mode} mode",
+    "auto_desc": "Fully automatic - all tool calls auto-approved",
+    "test_desc": "Test mode - almost all tool calls require confirmation",
+    "supervised_desc": "Supervised mode - user-customized permissions",
+    "permission_added": "Added {tool} to auto-approve list",
+    "permission_removed": "Moved {tool} to require-confirm list",
+    "permission_list_header": "Current permission configuration:",
+    "auto_approve_label": "Auto-approve",
+    "require_confirm_label": "Require confirmation",
+    "only_supervised": "Permission modification only available in SUPERVISED mode"
+  },
+  "ticket": {
+    "list_header": "Pending tasks:",
+    "empty": "No pending tasks",
+    "created": "Created {id}: {title}",
+    "completed": "{id} marked as completed",
+    "locked": "{id} is now locked",
+    "unlocked": "{id} unlocked",
+    "assigned": "Assigned {id}",
+    "not_found": "Task {id} not found",
+    "already_locked": "{id} is already locked by another agent",
+    "dependency_not_met": "Dependencies not met for {id}: {deps}"
+  }
+}

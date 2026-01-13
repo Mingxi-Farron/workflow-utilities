@@ -1,0 +1,41 @@
+# Workflow Utilities Plugin Configuration
+
+plugin:
+  name: workflow-utilities
+  version: 1.0.0
+
+# Language setting: zh-CN | en
+language: zh-CN
+
+# Feature toggles
+features:
+  git_guard: true
+  mode_control: true
+  optimization_ticket: true
+
+# File paths (customizable per project)
+paths:
+  workflow_config: WORKFLOW_CONFIG.md
+  tickets: OPTIMIZATION_TICKETS.md
+  mode_state: .claude/mode_state.json
+
+# Default SUPERVISED mode permissions
+supervised_defaults:
+  auto_approve:
+    - Read
+    - Write
+    - Edit
+    - Glob
+    - Grep
+    - WebSearch
+    - WebFetch
+    - Bash(git status)
+    - Bash(git diff)
+    - Bash(git log *)
+    - Bash(npm test)
+    - Bash(npm run build)
+  require_confirm:
+    - Bash(git commit *)
+    - Bash(git push *)
+    - Bash(rm *)
+    - Bash(mv *)

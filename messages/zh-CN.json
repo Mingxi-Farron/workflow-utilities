@@ -1,0 +1,35 @@
+{
+  "git_guard": {
+    "blocked": "Git 操作被拦截",
+    "confirm_prompt": "是否提交这些更改？",
+    "confirmed": "已提交",
+    "rejected": "好的，暂不提交",
+    "force_blocked": "禁止强制推送（除非明确请求）",
+    "hard_reset_blocked": "禁止硬重置（除非明确请求）"
+  },
+  "mode_control": {
+    "current": "当前模式：{mode}",
+    "switched": "已切换到 {mode} 模式",
+    "auto_desc": "全自动模式 - 所有工具调用自动批准",
+    "test_desc": "测试模式 - 几乎所有工具调用需要确认",
+    "supervised_desc": "监督模式 - 用户自定义权限配置",
+    "permission_added": "已将 {tool} 添加到自动批准列表",
+    "permission_removed": "已将 {tool} 移至需确认列表",
+    "permission_list_header": "当前权限配置：",
+    "auto_approve_label": "自动批准",
+    "require_confirm_label": "需要确认",
+    "only_supervised": "权限修改仅在 SUPERVISED 模式下可用"
+  },
+  "ticket": {
+    "list_header": "当前待处理任务：",
+    "empty": "没有待处理的任务",
+    "created": "已创建 {id}: {title}",
+    "completed": "{id} 已标记为完成",
+    "locked": "{id} 已被锁定",
+    "unlocked": "{id} 已解锁",
+    "assigned": "已分配 {id}",
+    "not_found": "未找到任务 {id}",
+    "already_locked": "{id} 已被其他 Agent 锁定",
+    "dependency_not_met": "{id} 的依赖尚未满足：{deps}"
+  }
+}
