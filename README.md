@@ -35,7 +35,7 @@ cp -r workflow-utilities/ /path/to/your/project/
 
 ```json
 {
-  "plugins": ["github:your-username/workflow-utilities"]
+  "plugins": ["github:Mingxi-Farron/workflow-utilities"]
 }
 ```
 
@@ -129,7 +129,7 @@ cp -r workflow-utilities/ /path/to/your/project/
 
 ```json
 {
-  "plugins": ["github:your-username/workflow-utilities"]
+  "plugins": ["github:Mingxi-Farron/workflow-utilities"]
 }
 ```
 
