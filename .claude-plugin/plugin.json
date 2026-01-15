@@ -1,16 +1,10 @@
 {
   "name": "workflow-utilities",
   "version": "1.0.0",
-  "description": {
-    "zh": "工作流实用工具集：Git保护、模式控制、任务管理",
-    "en": "Workflow utilities: Git guard, mode control, ticket management"
+  "description": "Workflow utilities: Git guard, mode control, ticket management",
+  "author": {
+    "name": "Mingxi-Farron",
+    "email": "mingxixu.art@gmail.com"
   },
-  "author": "Mingxi-Farron",
-  "license": "MIT",
-  "commands": ["mode", "ticket", "commit"],
-  "skills": ["git_guard", "mode_control", "optimization_ticket"],
-  "hooks": ["PreToolUse"],
-  "config": {
-    "language": "en"
-  }
+  "license": "MIT"
 }
