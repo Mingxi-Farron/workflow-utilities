@@ -1,12 +1,19 @@
 {
-"name": "workflow-utilities",
-"description": "Workflow utilities: Git guard, mode control, devlog, ticket management",
-"plugins": [
+  "name": "workflow-utilities",
+  "description": "Workflow utilities: Git guard, mode control, devlog, ticket management",
+  "owner": {
+    "name": "Mingxi-Farron",
+    "email": "mingxixu.art@gmail.com"
+  },
+  "plugins": [
     {
-    "id": "workflow-utilities",
-    "name": "Workflow Utilities",
-    "description": "Git guard, mode control, devlog session tracking, and ticket management",
-    "path": "."
+      "name": "workflow-utilities",
+      "description": "Git guard, mode control, devlog session tracking, and ticket management",
+      "author": {
+        "name": "Mingxi-Farron",
+        "email": "mingxixu.art@gmail.com"
+      },
+      "source": "."
     }
-]
+  ]
 }
