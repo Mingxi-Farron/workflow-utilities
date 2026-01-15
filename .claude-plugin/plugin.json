@@ -11,6 +11,6 @@
   "skills": ["git_guard", "mode_control", "optimization_ticket"],
   "hooks": ["PreToolUse"],
   "config": {
-    "language": "zh-CN"
+    "language": "en"
   }
 }

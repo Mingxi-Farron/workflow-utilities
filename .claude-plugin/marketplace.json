@@ -1,0 +1,12 @@
+{
+"name": "workflow-utilities",
+"description": "Workflow utilities: Git guard, mode control, devlog, ticket management",
+"plugins": [
+    {
+    "id": "workflow-utilities",
+    "name": "Workflow Utilities",
+    "description": "Git guard, mode control, devlog session tracking, and ticket management",
+    "path": "."
+    }
+]
+}
