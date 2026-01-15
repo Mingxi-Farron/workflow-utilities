@@ -1,3 +1,8 @@
+---
+description: "Control tool call permission levels"
+argument-hint: "[AUTO|TEST|SUPERVISED] or [allow|deny {tool}] or [list]"
+---
+
 # /mode - Mode Control Command
 
 Control tool call permission levels and switch between automation modes.

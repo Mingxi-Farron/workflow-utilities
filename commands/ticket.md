@@ -1,3 +1,8 @@
+---
+description: "Manage optimization tickets and tasks"
+argument-hint: "[list|show {id}|create|close {id}]"
+---
+
 # /ticket - Task Management Command
 
 Manage optimization tickets: create, list, assign, and complete tasks.

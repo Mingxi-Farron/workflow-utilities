@@ -1,3 +1,8 @@
+---
+description: "Trigger the git commit confirmation flow"
+argument-hint: ""
+---
+
 # /commit - Git Commit Command
 
 Trigger the git commit confirmation flow.
