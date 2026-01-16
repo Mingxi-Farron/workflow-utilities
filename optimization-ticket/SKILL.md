@@ -1,3 +1,16 @@
+---
+name: optimization-ticket
+version: "1.0.0"
+description: Record, assign, and track optimization tasks throughout their lifecycle. Supports TASK/MOD/HOTFIX types with lock protocol for concurrent assignment prevention.
+user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+---
+
 # Optimization Ticket - Task Management System
 
 Record, assign, and track optimization tasks throughout their lifecycle.

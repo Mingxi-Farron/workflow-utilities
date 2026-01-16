@@ -45,4 +45,4 @@ Instead of commands, you can say:
 
 ## Implementation
 
-Calls `skills/optimization_ticket.md` for execution logic.
+Calls `optimization-ticket/SKILL.md` for execution logic.

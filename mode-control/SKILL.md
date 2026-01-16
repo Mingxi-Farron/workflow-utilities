@@ -1,3 +1,16 @@
+---
+name: mode-control
+version: "1.0.0"
+description: Control Claude Code tool call permission levels through three modes (AUTO, TEST, SUPERVISED). Manage auto-approve and require-confirm tool lists.
+user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+---
+
 # Mode Control - Tool Permission Management
 
 Control Claude Code tool call permission levels through three modes.

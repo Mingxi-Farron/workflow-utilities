@@ -40,4 +40,4 @@ Write(output/*)         # Write to output directory
 
 ## Implementation
 
-Calls `skills/mode_control.md` for execution logic.
+Calls `mode-control/SKILL.md` for execution logic.

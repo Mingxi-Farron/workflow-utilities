@@ -1,3 +1,21 @@
+---
+name: git-guard
+version: "1.0.0"
+description: Prevent unauthorized git operations and require user confirmation for commits and pushes. Intercepts git commit/push commands via PreToolUse hook.
+user-invocable: true
+allowed-tools:
+  - Read
+  - Bash
+  - Glob
+  - Grep
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "${CLAUDE_PLUGIN_ROOT}/scripts/git_guard.sh"
+---
+
 # Git Guard - Git Operation Protection
 
 Prevent unauthorized git operations and require user confirmation for commits and pushes.

@@ -34,4 +34,4 @@ Or to reject:
 
 ## Implementation
 
-Calls `skills/git_guard.md` confirmation flow.
+Calls `git-guard/SKILL.md` confirmation flow.
