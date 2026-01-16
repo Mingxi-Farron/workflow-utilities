@@ -1,0 +1,10 @@
+# GitHub Sponsor 配置文件
+# 将此文件放置于仓库的 .github/FUNDING.yml
+
+ko_fi: mingxifarron
+
+# 未来可添加更多平台：
+# github: mingxifarron          # GitHub Sponsors (需先申请)
+# buy_me_a_coffee: username     # Buy Me a Coffee
+# patreon: username             # Patreon
+# custom: ["https://afdian.com/@username"]  # 自定义链接 (如爱发电)
