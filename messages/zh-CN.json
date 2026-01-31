@@ -31,5 +31,15 @@
     "not_found": "未找到任务 {id}",
     "already_locked": "{id} 已被其他 Agent 锁定",
     "dependency_not_met": "{id} 的依赖尚未满足：{deps}"
+  },
+  "task": {
+    "phase_review": "阶段 2：正在审核 {id}...",
+    "phase_test": "阶段 3：正在为 {id} 设计测试...",
+    "phase_implement": "阶段 4：正在实现 {id}...",
+    "phase_verify": "阶段 5：等待用户验证",
+    "awaiting_approval": "请测试并确认。回复「确认」或「通过」以关闭任务。",
+    "closed": "{id} 已关闭",
+    "not_found": "未找到任务 {id}",
+    "dependency_not_met": "无法执行 {id}：依赖未满足（{deps}）"
   }
 }

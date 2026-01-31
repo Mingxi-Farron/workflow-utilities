@@ -16,6 +16,7 @@ A Claude Code plugin providing workflow utilities: Git protection, mode control,
 | **Git Guard** | Intercept git commit/push for user confirmation |
 | **Mode Control** | Manage tool permission levels (AUTO/TEST/SUPERVISED) |
 | **Optimization Ticket** | Task management with locking mechanism |
+| **Task Execution** | Structured workflow: Review -> Test Design -> Implementation -> Verification |
 
 ### Installation
 
@@ -68,6 +69,11 @@ No need to memorize commands. Just talk to Claude:
 /ticket create           # Create new task
 /ticket close TASK-015   # Mark task complete
 
+/task TASK-015           # Execute full workflow for task
+/task review TASK-015    # Review only (analyze design)
+/task test TASK-015      # Design tests only
+/task close TASK-015     # Close after verification
+
 /commit                  # Trigger commit confirmation
 ```
 
@@ -110,6 +116,7 @@ Claude Code 工作流实用工具插件：Git 保护、模式控制、任务管�
 | **Git Guard** | 拦截 git commit/push，需用户确认 |
 | **Mode Control** | 管理工具权限级别（AUTO/TEST/SUPERVISED）|
 | **Optimization Ticket** | 任务管理，含锁定机制 |
+| **Task Execution** | 结构化工作流：审核 -> 测试设计 -> 实现 -> 验证 |
 
 ### 安装
 
@@ -161,6 +168,11 @@ cp -r workflow-utilities/ /path/to/your/project/
 /ticket show TASK-015    # 显示任务详情
 /ticket create           # 创建新任务
 /ticket close TASK-015   # 标记任务完成
+
+/task TASK-015           # 执行完整任务工作流
+/task review TASK-015    # 仅审核（分析设计）
+/task test TASK-015      # 仅设计测试
+/task close TASK-015     # 验证后关闭任务
 
 /commit                  # 触发提交确认
 ```

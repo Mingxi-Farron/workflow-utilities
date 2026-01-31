@@ -2,7 +2,7 @@
 
 plugin:
   name: workflow-utilities
-  version: 1.0.0
+  version: 1.2.0
 
 # Language setting: zh-CN | en
 language: zh-CN
@@ -12,6 +12,8 @@ features:
   git_guard: true
   mode_control: true
   optimization_ticket: true
+  task_execution: true
+  roundtable: true
 
 # File paths (customizable per project)
 paths:

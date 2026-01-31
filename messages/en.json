@@ -31,5 +31,15 @@
     "not_found": "Task {id} not found",
     "already_locked": "{id} is already locked by another agent",
     "dependency_not_met": "Dependencies not met for {id}: {deps}"
+  },
+  "task": {
+    "phase_review": "Phase 2: Reviewing {id}...",
+    "phase_test": "Phase 3: Designing tests for {id}...",
+    "phase_implement": "Phase 4: Implementing {id}...",
+    "phase_verify": "Phase 5: Awaiting user verification",
+    "awaiting_approval": "Please test and confirm. Say 'confirmed' or 'LGTM' to close the task.",
+    "closed": "{id} closed successfully",
+    "not_found": "Task {id} not found",
+    "dependency_not_met": "Cannot execute {id}: dependencies not met ({deps})"
   }
 }

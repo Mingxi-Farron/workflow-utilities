@@ -1,7 +1,7 @@
 {
   "name": "workflow-utilities",
-  "version": "1.0.0",
-  "description": "Workflow utilities: Git guard, mode control, ticket management",
+  "version": "1.2.0",
+  "description": "Workflow utilities: Git guard, mode control, ticket management, task execution, roundtable investigation",
   "author": {
     "name": "Mingxi-Farron",
     "email": "mingxixu.art@gmail.com"
