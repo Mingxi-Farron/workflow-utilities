@@ -210,7 +210,7 @@ features:
 
 ```bash
 claude plugin uninstall workflow-utilities@workflow-utilities
-claude plugin install workflow-utilities@workflow-utilities --scope local
+claude plugin install workflow-utilities@workflow-utilities --scope project
 ```
 
 ---
@@ -222,7 +222,7 @@ claude plugin install workflow-utilities@workflow-utilities --scope local
 检查清单：
 - [ ] `marketplace.json` 描述是否包含新功能？
 - [ ] `marketplace.json` 版本是否与 `plugin.json` 一致？
-- [ ] `settings.local.json` 是否添加了 `Skill(workflow-utilities:{cmd})` 权限？
+- [ ] `settings.json`（project scope）或 `settings.local.json`（local scope）是否添加了 `Skill(workflow-utilities:{cmd})` 权限？
 - [ ] 是否重启了 Claude Code？
 
 ### Q2: 命令名和 Skill 目录名的关系？
@@ -322,7 +322,7 @@ claude plugin marketplace add ./workflow-utilities
 claude plugin disable workflow-utilities@workflow-utilities --scope project
 
 # 4. 重新安装（从本地 marketplace）
-claude plugin install workflow-utilities@workflow-utilities --scope local
+claude plugin install workflow-utilities@workflow-utilities --scope project
 
 # 5. 验证版本
 claude plugin list
@@ -359,7 +359,7 @@ claude plugin disable workflow-utilities@workflow-utilities --scope project
 claude plugin disable workflow-utilities@workflow-utilities --scope local
 
 # 然后重新安装到目标 scope
-claude plugin install workflow-utilities@workflow-utilities --scope local
+claude plugin install workflow-utilities@workflow-utilities --scope project
 ```
 
 ---
