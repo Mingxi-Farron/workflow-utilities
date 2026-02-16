@@ -9,7 +9,14 @@
     {
       "name": "workflow-utilities",
       "description": "Git guard, mode control, ticket management, task execution, and roundtable investigation",
-      "source": "./",
+      "author": {
+        "name": "Mingxi-Farron",
+        "email": "mingxixu.art@gmail.com"
+      },
+      "source": {
+        "source": "github",
+        "repo": "Mingxi-Farron/workflow-utilities"
+      },
       "version": "1.2.0"
     }
   ]
