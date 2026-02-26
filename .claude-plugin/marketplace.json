@@ -1,6 +1,6 @@
 {
-  "name": "workflow-utilities",
-  "description": "Workflow utilities: Git guard, mode control, ticket management, task execution, roundtable investigation",
+  "name": "wf-marketplace",
+  "description": "Workflow utilities: Git guard, mode control, ticket management, task execution, roundtable investigation, price investigation",
   "owner": {
     "name": "Mingxi-Farron",
     "email": "mingxixu.art@gmail.com"
@@ -17,7 +17,7 @@
         "source": "github",
         "repo": "Mingxi-Farron/workflow-utilities"
       },
-      "version": "1.2.0"
+      "version": "1.3.0"
     }
   ]
 }

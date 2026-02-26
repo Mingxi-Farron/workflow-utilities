@@ -100,6 +100,19 @@ Combine results from all agents:
 
 ### Step 4: Output Report
 
+> **Output standard**: see `_system/core/report_output_standard.md`
+
+**默认语言**: 中文。使用 `--bilingual` 生成中英双语报告（`<!-- zh/en -->` 标记，HTML 含语言切换按钮）。规范见 `_system/core/report_output_standard.md` §4.4。
+
+**文件输出**（仅当调查结果需要保存时）:
+```
+reports/_current_YYYYMMDD/{Topic}_调查报告/
+├── {Topic}_Research.md                         # 源文件
+├── {Topic} 调查报告.html                       # 直接阅读（中文醒目标题）
+└── {Topic} 调查报告.pdf                        # 直接阅读
+```
+
+**报告结构**:
 ```markdown
 ## Roundtable: {question}
 

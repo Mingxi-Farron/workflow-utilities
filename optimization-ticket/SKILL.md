@@ -1,12 +1,11 @@
 ---
 name: optimization-ticket
-version: "1.0.0"
+version: "2.0.0"
 description: Record, assign, and track optimization tasks throughout their lifecycle. Supports TASK/MOD/HOTFIX types with lock protocol for concurrent assignment prevention.
 user-invocable: true
 allowed-tools:
   - Read
-  - Write
-  - Edit
+  - Bash
   - Glob
   - Grep
 ---
@@ -14,6 +13,13 @@ allowed-tools:
 # Optimization Ticket - Task Management System
 
 Record, assign, and track optimization tasks throughout their lifecycle.
+
+## Tool Path
+
+```
+TOOL = _system/tools/ticket_manager.py
+INVOKE = PYTHONUTF8=1 python {TOOL}
+```
 
 ## Trigger Conditions
 
@@ -84,6 +90,15 @@ Record, assign, and track optimization tasks throughout their lifecycle.
 - "work on {id}"
 - "take {id}"
 
+### Validate Tickets (zh)
+- "检查任务完整性"
+- "验证ticket"
+- "ticket检查"
+
+### Validate Tickets (en)
+- "validate tickets"
+- "check ticket integrity"
+
 ## Task Schema
 
 ```yaml
@@ -118,52 +133,41 @@ updated: "Last update timestamp"
 
 ## Operations
 
+All operations dispatch to `ticket_manager.py`. The agent parses user intent via NLU, then invokes the tool.
+
 ### LIST
 ```
-1. Read OPTIMIZATION_TICKETS.md
-2. Filter tasks with status=pending
-3. Format and output
+PYTHONUTF8=1 python _system/tools/ticket_manager.py list [--status pending|completed|all] [--type TASK|MOD|HOTFIX] [--all]
 ```
 
 ### SHOW
 ```
-1. Find task by ID
-2. Display full details
+PYTHONUTF8=1 python _system/tools/ticket_manager.py show {id}
 ```
 
 ### CREATE
 ```
-1. Determine task type (TASK/MOD/HOTFIX)
-2. Assign unique ID
-3. Fill in problem and scope
-4. Set status=pending
-5. Write to ticket file
+PYTHONUTF8=1 python _system/tools/ticket_manager.py create --type {TASK|MOD|HOTFIX} --title "{title}" --priority {P0|P1|P2|P3} [--problem "{problem}"] [--scope "{scope}"] [--deps "ID1,ID2"]
 ```
 
 ### ASSIGN
 ```
-1. Check if status is pending
-2. Check if dependencies are met
-3. Execute lock protocol
-4. Update assignee and status=in_progress
+PYTHONUTF8=1 python _system/tools/ticket_manager.py assign {id} [--assignee {name}]
 ```
 
 ### COMPLETE
 ```
-1. Update status=completed
-2. Release lock
-3. Record completion time
-4. Update downstream dependencies
+PYTHONUTF8=1 python _system/tools/ticket_manager.py close {id} [--status completed]
+```
+
+### VALIDATE
+```
+PYTHONUTF8=1 python _system/tools/ticket_manager.py validate
 ```
 
 ## Lock Protocol
 
-### Acquire Lock
-```
-1. Check if task status is pending
-2. If pending, update to in_progress with lock info
-3. If already locked, skip task
-```
+Lock acquisition, timeout detection, and release are enforced internally by `ticket_manager.py`. The agent does not manage lock state directly.
 
 ### Lock Info Format
 ```
@@ -171,16 +175,22 @@ updated: "Last update timestamp"
 **Lock**: Agent-{ID} | {time} | Est. {duration}
 ```
 
-### Release Lock
-```
-1. Update status to completed
-2. Clear lock info
-```
-
 ### Timeout
 - Duration: 4 hours
 - Action: Considered expired, takeover allowed
 - Takeover format: `Agent-{new} | {time} | Takeover from Agent-{old}`
+
+## Data Layout
+
+```
+tickets/
+  INDEX.md          # Summary table (lightweight, LIST reads only this)
+  active/           # pending, in_progress, on_hold, partial, observing
+    TASK-004.md
+    MOD-013.md
+  archive/          # completed, done, implemented, superseded, absorbed
+    TASK-001.md
+```
 
 ## Message Templates
 

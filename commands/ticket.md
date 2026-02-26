@@ -1,6 +1,6 @@
 ---
 description: "Manage optimization tickets and tasks"
-argument-hint: "[list|show {id}|create|close {id}]"
+argument-hint: "[list|show {id}|create|close {id}|validate]"
 ---
 
 # /ticket - Task Management Command
@@ -11,10 +11,13 @@ Manage optimization tickets: create, list, assign, and complete tasks.
 
 ```
 /ticket                    # List pending tasks
-/ticket list               # List pending tasks
+/ticket list               # List pending tasks (filterable)
+/ticket list --all         # List all tasks
+/ticket list --type MOD    # List only MOD tickets
 /ticket show {id}          # Show task details
 /ticket create             # Create new task interactively
 /ticket close {id}         # Mark task as completed
+/ticket validate           # Check ticket integrity
 ```
 
 ## Task Types
@@ -42,7 +45,18 @@ Instead of commands, you can say:
 - "Show me TASK-015" -> `/ticket show TASK-015`
 - "Create a task about..." -> `/ticket create`
 - "TASK-015 is done" -> `/ticket close TASK-015`
+- "Check ticket integrity" -> `/ticket validate`
+
+## Data Layout
+
+```
+tickets/
+  INDEX.md          # Summary table (read by list)
+  active/           # Individual ticket files (pending, in_progress, ...)
+  archive/          # Completed/closed tickets
+```
 
 ## Implementation
 
-Calls `optimization-ticket/SKILL.md` for execution logic.
+Calls `optimization-ticket/SKILL.md` which dispatches to
+`python _system/tools/ticket_manager.py <subcommand>`.

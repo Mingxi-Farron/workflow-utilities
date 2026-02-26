@@ -14,30 +14,70 @@ features:
   optimization_ticket: true
   task_execution: true
   roundtable: true
+  price_investigation: true
+  case_study: true
 
 # File paths (customizable per project)
 paths:
   workflow_config: WORKFLOW_CONFIG.md
-  tickets: OPTIMIZATION_TICKETS.md
+  ticket_index: tickets/INDEX.md
+  ticket_dir: tickets/
+  ticket_active: tickets/active/
+  ticket_archive: tickets/archive/
+  ticket_tool: _system/tools/ticket_manager.py
   mode_state: .claude/mode_state.json
+
+# WebFetch domain management
+webfetch:
+  # AUTO mode: blanket WebFetch (all domains)
+  # SUPERVISED mode: whitelist from _system/core/webfetch_whitelist.yaml
+  whitelist_file: _system/core/webfetch_whitelist.yaml
+  sync_tool: _system/tools/whitelist_sync.py
+
+# Mode-specific permissions
+# AUTO: auto_approve ["*"] (includes blanket WebFetch)
+# TEST: auto_approve [Read, Glob, Grep] only
+# SUPERVISED: auto_approve list below + WebFetch whitelist domains
 
 # Default SUPERVISED mode permissions
 supervised_defaults:
   auto_approve:
+    # --- Built-in tools ---
     - Read
     - Write
     - Edit
     - Glob
     - Grep
     - WebSearch
-    - WebFetch
+    # WebFetch: SUPERVISED uses domain whitelist (see webfetch.whitelist_file)
+    # AUTO mode uses blanket WebFetch (all domains)
+    # --- Git (read-only) ---
     - Bash(git status)
     - Bash(git diff)
     - Bash(git log *)
+    # --- Build & test ---
     - Bash(npm test)
     - Bash(npm run build)
+    # --- Workflow tools (python _system/tools/*) ---
+    - Bash(python:*)
+    - Bash(PYTHONIOENCODING=utf-8 python:*)
+    - Bash(PYTHONUTF8=1 python:*)
+    # --- File operations (non-destructive) ---
+    - Bash(mkdir:*)
+    - Bash(cp:*)
+    - Bash(ls:*)
+    - Bash(for:*)
+    # --- Skills (workflow commands) ---
+    - Skill(spec-daily)
+    - Skill(invest-periodic)
+    - Skill(market-overview)
+    - Skill(dashboard)
+    - Skill(radar)
+    - Skill(investigate)
+    - Skill(account)
   require_confirm:
     - Bash(git commit *)
     - Bash(git push *)
     - Bash(rm *)
     - Bash(mv *)
+    - Bash(git reset *)

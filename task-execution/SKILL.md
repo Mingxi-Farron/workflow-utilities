@@ -94,8 +94,8 @@ Phase 6: Close Ticket (requires user approval)
 ### Phase 1: Task Identification
 
 ```
-1. Read OPTIMIZATION_TICKETS.md or specified ticket file
-2. Locate target task by ID
+1. Invoke `PYTHONUTF8=1 python _system/tools/ticket_manager.py show {id}` to retrieve task details
+2. Parse the output for task metadata
 3. Parse requirements and acceptance criteria
 4. Optionally mark status: Open -> In Progress
 5. Output task summary for confirmation

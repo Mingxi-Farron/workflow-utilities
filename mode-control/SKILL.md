@@ -87,39 +87,42 @@ Control Claude Code tool call permission levels through three modes.
 ## Mode Definitions
 
 ### AUTO Mode
-- **Description**: All tool calls auto-approved
-- **Permissions**: `auto_approve: ["*"]`
+- **Description**: All tool calls auto-approved, zero user confirmation
+- **Permissions**: `permissions.allow: ["*"]`
+- **Config file**: `.claude/settings.local.json`
 - **Use case**: Mature workflows, batch processing, trusted environment
 
 ### TEST Mode
 - **Description**: Almost all tool calls require confirmation
 - **Permissions**:
-  - `auto_approve: ["Read", "Glob", "Grep"]`
-  - `require_confirm: ["*"]`
+  - `permissions.allow: ["Read", "Glob", "Grep"]`
+  - `permissions.deny: ["*"]`
+- **Config file**: `.claude/settings.local.json`
 - **Use case**: Debugging, new workflow validation, security-sensitive
 
 ### SUPERVISED Mode
-- **Description**: User-customizable permissions
+- **Description**: User-customizable allow/deny lists
 - **Permissions**:
-  - `auto_approve`: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch, git status/diff/log, npm test/build
-  - `require_confirm`: git commit/push, rm, mv
-- **Customizable**: Yes
+  - `permissions.allow`: Read, Write, Edit, Glob, Grep, WebSearch, `WebFetch(domain:*)`, `Bash(python:*)`, `Bash(git:*)`, `Bash(npm:*)`, `Bash(mkdir:*)`, `Bash(ls:*)`, `Bash(cp:*)`
+  - `permissions.deny`: `Bash(rm -rf:*)`, `Bash(git push --force:*)`
+- **Customizable**: Yes — users can add/remove individual tool patterns
+- **Config file**: `.claude/settings.local.json`
 - **Use case**: Daily production, balance efficiency and safety
 
 ## Execution Logic
 
 ### On Startup
 ```
-1. Read .claude/settings.json
-2. Read .claude/mode_state.json
-3. Apply current mode permissions
+1. Read .claude/settings.local.json (permissions.allow / permissions.deny)
+2. Read .claude/mode_state.json (current mode name)
+3. Display current mode to user
 ```
 
 ### On Mode Switch
 ```
 1. Load target mode permission template
-2. Write to .claude/settings.json
-3. Save current mode to mode_state.json
+2. Write permissions.allow / permissions.deny to .claude/settings.local.json
+3. Save current mode name to .claude/mode_state.json
 4. Notify user
 ```
 
@@ -127,10 +130,9 @@ Control Claude Code tool call permission levels through three modes.
 ```
 1. Verify current mode is SUPERVISED
 2. Parse tool name and pattern
-3. Update auto_approve or require_confirm list
-4. Write to .claude/settings.json
-5. Sync mode_state.json
-6. Notify user
+3. Update permissions.allow or permissions.deny list in .claude/settings.local.json
+4. Sync mode_state.json
+5. Notify user
 ```
 
 ## Tool Pattern Syntax

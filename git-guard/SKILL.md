@@ -8,12 +8,6 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "${CLAUDE_PLUGIN_ROOT}/scripts/git_guard.sh"
 ---
 
 # Git Guard - Git Operation Protection
