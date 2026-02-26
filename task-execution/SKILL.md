@@ -80,14 +80,21 @@ Phase 2: Review (Plan Agent)
 Phase 3: Test Design (Plan Agent)
     |
     v
+Phase 3.5: Test File Creation (Code Agent) ← MANDATORY DEFAULT
+    |
+    v
 Phase 4: Implementation (Code Agent)
     |
     v
-Phase 5: User Verification
+Phase 5: User Verification (run tests, confirm pass)
     |
     v
 Phase 6: Close Ticket (requires user approval)
 ```
+
+> **MANDATORY TEST RULE**: Phase 3.5 is NOT optional. Acceptance criteria are interpreted
+> by the LLM from ticket text — without external enforcement, test files are the only
+> executable verification. Test files MUST be created before implementation begins.
 
 ## Phase Details
 
@@ -203,10 +210,66 @@ Each test item should include:
 ```
 
 **Output Expected:**
-- Test case list
+- Test case list with target file paths
 - Preconditions
 - Step-by-step verification
 - Expected outcomes
+- Target test file path (e.g. `tests/test_{feature}.py`)
+
+---
+
+### Phase 3.5: Test File Creation (Code Agent) — MANDATORY
+
+**Agent Type:** Code (read-write)
+
+**Mandatory Rule:** This phase is ALWAYS executed. It cannot be skipped.
+- Acceptance criteria come from LLM interpretation of ticket text — no external enforcement exists.
+- Test files are the only executable verification of correctness.
+- If the task has no explicit test requirement, the LLM MUST still write tests covering the acceptance criteria it identified.
+
+**Purpose:**
+- Write actual test files based on Phase 3 design
+- Tests must be runnable immediately (no stub placeholders)
+- Tests should FAIL before implementation (TDD), PASS after implementation
+
+**Test File Naming:**
+| Language | Convention | Example |
+|----------|-----------|---------|
+| Python | `tests/test_{module}.py` | `tests/test_risk_checker.py` |
+| TypeScript/JS | `{module}.test.ts` | `risk_checker.test.ts` |
+| Go | `{module}_test.go` | `risk_checker_test.go` |
+
+**Scope:**
+- Unit tests: mandatory
+- Integration/e2e tests: mandatory if task touches module boundaries or external interfaces
+- Boundary tests: mandatory
+
+**Prompt Template:**
+
+```markdown
+## Task: Write Test Files for {feature name}
+
+### Test Design (from Phase 3)
+{paste Phase 3 output}
+
+### Requirements
+- Write runnable test files, not pseudocode or stubs
+- Each test must have a clear assertion
+- Tests must FAIL before implementation exists
+- Cover: unit, integration (if applicable), boundary cases
+
+### Files to Create
+- `{test file path}` — {what it covers}
+
+### Do NOT implement the feature itself — tests only.
+```
+
+**Output Expected:**
+- Actual test files written to disk
+- List of test files created
+- Confirmation that tests are runnable (imports resolve, syntax valid)
+
+---
 
 ### Phase 4: Implementation (Code Agent)
 
@@ -260,9 +323,12 @@ Each test item should include:
 
 **Actions:**
 1. Present implementation summary
-2. Provide test steps (from Phase 3)
-3. Explain how to verify
-4. Wait for user feedback
+2. **Run the test files created in Phase 3.5** — show actual output
+3. If tests fail: surface failures, do NOT proceed to close
+4. If tests pass: present results and wait for user confirmation
+
+**CRITICAL:** User saying "I'll test later" is NOT sufficient to close the ticket.
+Tests must be executed and shown to pass within this phase.
 
 **Output Template:**
 
@@ -276,15 +342,30 @@ Each test item should include:
 - `{file1}`: {changes made}
 - `{file2}`: {changes made}
 
-### Test Steps
-{test steps from Phase 3}
+### Test Results
+```
+{actual test runner output — e.g. pytest, jest, go test}
+```
+Status: ✓ PASS ({n} tests) / ✗ FAIL ({n} failed)
 
-### How to Verify
-1. {step 1}
-2. {step 2}
-3. {step 3}
+### How to Re-run Tests
+```bash
+{command to run tests}
+```
 
-**Please test and provide feedback.**
+**All tests passing. Please confirm to close ticket.**
+```
+
+**If tests fail:**
+
+```markdown
+## Tests Failed — Implementation Incomplete
+
+### Failing Tests
+{list failing test names and error output}
+
+### Next Steps
+Returning to Phase 4 to fix implementation.
 ```
 
 ### Phase 6: Close Ticket
@@ -356,16 +437,20 @@ Must be serial:
 ### EXECUTE (Full Workflow)
 
 ```
-1. Read ticket, parse task details
-2. Call Plan Agent for review
-3. Wait for review completion
-4. Call Plan Agent for test design
-5. Wait for test design completion
-6. Call Code Agent for implementation
-7. Wait for implementation completion
-8. Present results to user
-9. Wait for user verification
-10. On approval, close ticket
+1.  Read ticket, parse task details
+2.  Call Plan Agent for review
+3.  Wait for review completion
+4.  Call Plan Agent for test design
+5.  Wait for test design completion
+6.  Call Code Agent to write test files (MANDATORY — cannot skip)
+7.  Wait for test file creation
+8.  Call Code Agent for implementation
+9.  Wait for implementation completion
+10. Run test files, capture output
+11. If tests fail → return to step 8
+12. If tests pass → present results + test output to user
+13. Wait for explicit user approval
+14. On approval, close ticket
 ```
 
 ### REVIEW (Phase 2 Only)

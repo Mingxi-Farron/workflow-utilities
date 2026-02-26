@@ -24,8 +24,9 @@ Execute tasks using a structured workflow with subagent orchestration: Review ->
 | 1. Identification | - | Read ticket, parse requirements |
 | 2. Review | Plan | Analyze code, identify risks, suggest order |
 | 3. Test Design | Plan | Design unit/integration/boundary tests |
+| 3.5. Test Creation | Code | **Write test files (MANDATORY)** |
 | 4. Implementation | Code | Write code, modify files |
-| 5. Verification | - | Present results, wait for user test |
+| 5. Verification | - | Run tests, show results, wait for approval |
 | 6. Close | - | Update ticket (requires user approval) |
 
 ## Examples
