@@ -17,9 +17,9 @@ A Claude Code plugin providing workflow utilities: Git protection, mode control,
 | **Mode Control** | Manage tool permission levels (AUTO/TEST/SUPERVISED) |
 | **Plan** | Create structured implementation plans with Opus reasoning + progress tracking |
 | **Handoff** | Create concise handoff files for unfinished tasks |
-| **Plan Loader** | Auto-resume implementation sessions from latest handoff/plan |
-| **Optimization Ticket** | Task management with locking mechanism |
-| **Task Execution** | Structured workflow: Review -> Test Design -> Implementation -> Verification |
+| **Plan Loader** | Auto-resume implementation sessions from latest handoff/plan (requires env alias, see below) |
+| **Optimization Ticket** | Task management with locking mechanism *(being reworked → Task Registry with plan/handoff integration)* |
+| **Task Execution** | Structured workflow: Review -> Test Design -> Implementation -> Verification (defaults to latest plan) |
 | **Roundtable** | Multi-perspective investigation and analysis |
 
 ### Installation
@@ -98,6 +98,27 @@ The plugin includes shell hook scripts for Claude Code:
 
 Copy hooks to `.claude/hooks/` and register in `.claude/settings.json`. See each skill's SKILL.md for installation instructions.
 
+### Plan Loader Setup
+
+Plan Loader only activates when `CLAUDE_SESSION_TYPE=impl`. Add a shell alias so you can launch implementation sessions easily:
+
+**Bash / Zsh** (`~/.bashrc` or `~/.zshrc`):
+```bash
+alias claude-impl='CLAUDE_SESSION_TYPE=impl claude'
+```
+
+**PowerShell** (`$PROFILE`):
+```powershell
+function claude-impl { $env:CLAUDE_SESSION_TYPE='impl'; claude; Remove-Item Env:CLAUDE_SESSION_TYPE }
+```
+
+Then start an implementation session with:
+```bash
+claude-impl
+```
+
+The hook will auto-inject the latest in-progress handoff or approved plan into the session context.
+
 ### Modes
 
 | Mode | Tool Permissions |
@@ -143,9 +164,9 @@ Claude Code 工作流实用工具插件：Git 保护、模式控制、计划与�
 | **Mode Control** | 管理工具权限级别（AUTO/TEST/SUPERVISED）|
 | **Plan** | 使用 Opus 推理创建结构化实施计划 + 进度追踪 |
 | **Handoff** | 为未完成任务创建简洁的交接文档 |
-| **Plan Loader** | 自动从最新交接/计划恢复实施会话 |
-| **Optimization Ticket** | 任务管理，含锁定机制 |
-| **Task Execution** | 结构化工作流：审核 -> 测试设计 -> 实现 -> 验证 |
+| **Plan Loader** | 自动从最新交接/计划恢复实施会话（需配置 env alias，见下方说明） |
+| **Optimization Ticket** | 任务管理，含锁定机制 *（重构中 → Task Registry，与 plan/handoff 深度集成）* |
+| **Task Execution** | 结构化工作流：审核 -> 测试设计 -> 实现 -> 验证（默认使用最新 plan 文件） |
 | **Roundtable** | 多视角调查与分析 |
 
 ### 安装
@@ -223,6 +244,27 @@ cp -r workflow-utilities/ /path/to/your/project/
 | `plan-loader/plan-loader.sh` | SessionStart | 为 impl 会话自动注入计划/交接上下文 |
 
 将 hook 复制到 `.claude/hooks/` 并在 `.claude/settings.json` 中注册。详见各 SKILL.md 的安装说明。
+
+### Plan Loader 配置
+
+Plan Loader 仅在 `CLAUDE_SESSION_TYPE=impl` 时激活。添加 shell alias 以便快速启动实施会话：
+
+**Bash / Zsh** (`~/.bashrc` 或 `~/.zshrc`):
+```bash
+alias claude-impl='CLAUDE_SESSION_TYPE=impl claude'
+```
+
+**PowerShell** (`$PROFILE`):
+```powershell
+function claude-impl { $env:CLAUDE_SESSION_TYPE='impl'; claude; Remove-Item Env:CLAUDE_SESSION_TYPE }
+```
+
+然后使用以下命令启动实施会话：
+```bash
+claude-impl
+```
+
+Hook 会自动将最新的 in-progress 交接文档或 approved 计划注入会话上下文。
 
 ### 模式说明
 
