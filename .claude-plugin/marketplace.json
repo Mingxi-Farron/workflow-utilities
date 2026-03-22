@@ -13,10 +13,7 @@
         "name": "Mingxi-Farron",
         "email": "mingxixu.art@gmail.com"
       },
-      "source": {
-        "source": "github",
-        "repo": "Mingxi-Farron/workflow-utilities"
-      },
+      "source": "./",
       "version": "1.5.0"
     }
   ]
