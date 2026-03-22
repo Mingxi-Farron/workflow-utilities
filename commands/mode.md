@@ -1,42 +1,29 @@
 ---
-description: "Control tool call permission levels"
-argument-hint: "[AUTO|TEST|SUPERVISED] or [allow|deny {tool}] or [list]"
+description: "Switch permission mode (AUTO/TEST/SUPERVISED)"
+argument-hint: "[AUTO|TEST|SUPERVISED] or [list]"
 ---
 
-# /mode - Mode Control Command
+# /mode - Permission Mode Control
 
-Control tool call permission levels and switch between automation modes.
+Switch between AUTO, TEST, and SUPERVISED permission modes by directly editing `.claude/settings.local.json`.
 
 ## Usage
 
 ```
 /mode                      # Show current mode and permissions
-/mode AUTO                 # Switch to AUTO mode (all auto-approved)
-/mode TEST                 # Switch to TEST mode (most require confirmation)
-/mode SUPERVISED           # Switch to SUPERVISED mode (customizable)
-/mode allow {tool}         # Add tool to auto-approve list (SUPERVISED only)
-/mode deny {tool}          # Remove tool from auto-approve list (SUPERVISED only)
+/mode AUTO                 # All tools auto-approved, zero prompts
+/mode TEST                 # Only Read/Glob/Grep auto-approved
+/mode SUPERVISED           # Restore balanced permissions (from backup or defaults)
 /mode list                 # List current permission configuration
 ```
 
 ## Modes
 
-| Mode | Description |
-|------|-------------|
-| AUTO | All tool calls auto-approved |
-| TEST | Only Read/Glob/Grep auto-approved, others require confirmation |
-| SUPERVISED | User-customizable permissions |
-
-## Tool Pattern Syntax
-
-```
-Read                    # All Read operations
-Bash                    # All Bash operations
-Bash(git *)             # Git-related commands
-Bash(git status)        # Specific command
-Edit(*.md)              # Edit markdown files
-Write(output/*)         # Write to output directory
-```
+| Mode | Description | Auto-Approved |
+|------|-------------|---------------|
+| AUTO | Zero confirmation prompts | All tools (bare names) |
+| TEST | Maximum confirmation | Read, Glob, Grep only |
+| SUPERVISED | Balanced, customizable | Per `plugin_config.yaml` |
 
 ## Implementation
 

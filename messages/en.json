@@ -1,24 +1,45 @@
 {
   "git_guard": {
-    "blocked": "Git operation blocked",
-    "confirm_prompt": "Do you want to commit these changes?",
-    "confirmed": "Committed",
-    "rejected": "OK, commit cancelled",
-    "force_blocked": "Force push blocked (unless explicitly requested)",
-    "hard_reset_blocked": "Hard reset blocked (unless explicitly requested)"
+    "blocked": "BLOCKED: Destructive git operation intercepted",
+    "reset_hard_blocked": "BLOCKED: git reset --hard discards all uncommitted changes permanently",
+    "clean_blocked": "BLOCKED: git clean -f permanently deletes untracked files",
+    "checkout_blocked": "BLOCKED: git checkout -- . / git restore . discards all working tree changes",
+    "filter_repo_blocked": "BLOCKED: git filter-repo --force overwrites working tree and purges reflog",
+    "safe_alternative": "Required: git stash → run command → git stash pop"
   },
   "mode_control": {
     "current": "Current mode: {mode}",
     "switched": "Switched to {mode} mode",
-    "auto_desc": "Fully automatic - all tool calls auto-approved",
-    "test_desc": "Test mode - almost all tool calls require confirmation",
-    "supervised_desc": "Supervised mode - user-customized permissions",
+    "auto_desc": "AUTO mode — all tool calls auto-approved, zero confirmation prompts",
+    "test_desc": "TEST mode — only Read/Glob/Grep auto-approved, everything else requires confirmation",
+    "supervised_desc": "SUPERVISED mode — balanced permissions from config or user backup",
     "permission_added": "Added {tool} to auto-approve list",
     "permission_removed": "Moved {tool} to require-confirm list",
     "permission_list_header": "Current permission configuration:",
     "auto_approve_label": "Auto-approve",
     "require_confirm_label": "Require confirmation",
     "only_supervised": "Permission modification only available in SUPERVISED mode"
+  },
+  "plan": {
+    "collect_params": "Please provide the following (skip any that don't apply):",
+    "extracted_params": "Extracted parameters from conversation:",
+    "feedback_prompt": "Plan ready. Feedback? (or type \"approved\" to save)",
+    "saved": "Plan saved: {path}",
+    "progress_updating": "Updating progress on: {path}",
+    "progress_updated": "Progress updated: {path}",
+    "no_plans": "No plan files found in .claude/docs/plan/",
+    "max_iterations": "Maximum feedback iterations reached. Save current version?"
+  },
+  "handoff": {
+    "summary": "Handoff: \"{task}\" | Status: {status} | File: {path}",
+    "created": "Handoff created: {path}",
+    "latest": "Latest handoff: {path}",
+    "no_handoffs": "No handoff files found in .claude/docs/handoff/"
+  },
+  "plan_loader": {
+    "resuming_handoff": "Resuming from handoff: {path}",
+    "resuming_plan": "Starting implementation from plan: {path}",
+    "no_context": "No active handoff or approved plan found"
   },
   "ticket": {
     "list_header": "Pending tasks:",

@@ -1,7 +1,7 @@
 ---
 name: mode-control
-version: "1.0.0"
-description: Control Claude Code tool call permission levels through three modes (AUTO, TEST, SUPERVISED). Manage auto-approve and require-confirm tool lists.
+version: "2.0.0"
+description: "Switch permission mode (AUTO/TEST/SUPERVISED) by editing .claude/settings.local.json"
 user-invocable: true
 allowed-tools:
   - Read
@@ -9,152 +9,176 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+  - Bash
 ---
 
 # Mode Control - Tool Permission Management
 
-Control Claude Code tool call permission levels through three modes.
+Switch between AUTO, TEST, and SUPERVISED permission modes by directly editing `.claude/settings.local.json`.
 
 ## Trigger Conditions
 
-- Agent startup (auto-read configuration)
-- User natural language mode switch
 - User calls `/mode` command
-- User modifies permissions in SUPERVISED mode
+- User natural language mode switch (see below)
 
-## Natural Language Understanding
+## Natural Language Triggers
 
-### Query Mode (zh)
-- "现在什么模式"
-- "当前模式"
-- "哪个模式"
-- "什么权限"
+### Query Mode
+- "what mode" / "current mode" / "当前模式" / "什么模式"
 
-### Query Mode (en)
-- "what mode"
-- "current mode"
-- "which mode"
-- "what permissions"
+### Switch to AUTO
+- "auto mode" / "fully automatic" / "approve all" / "全自动" / "不用确认了" / "全部放行"
 
-### Switch to AUTO (zh)
-- "切换到自动"
-- "用自动模式"
-- "全自动"
-- "不用确认了"
-- "全部放行"
+### Switch to TEST
+- "test mode" / "debug mode" / "ask for everything" / "测试模式" / "每步都确认" / "全部询问"
 
-### Switch to AUTO (en)
-- "switch to auto"
-- "auto mode"
-- "fully automatic"
-- "approve all"
+### Switch to SUPERVISED
+- "supervised mode" / "normal mode" / "监督模式" / "正常模式"
 
-### Switch to TEST (zh)
-- "切换到测试"
-- "用测试模式"
-- "调试模式"
-- "每步都确认"
-- "全部询问"
-
-### Switch to TEST (en)
-- "switch to test"
-- "test mode"
-- "debug mode"
-- "ask for everything"
-
-### Switch to SUPERVISED (zh)
-- "切换到监督"
-- "监督模式"
-- "正常模式"
-
-### Switch to SUPERVISED (en)
-- "switch to supervised"
-- "supervised mode"
-- "normal mode"
-
-### Modify Permissions (zh)
-- "允许 {tool}"
-- "禁止 {tool}"
-- "添加自动批准 {tool}"
-- "移除自动批准 {tool}"
-
-### Modify Permissions (en)
-- "allow {tool}"
-- "deny {tool}"
-- "auto approve {tool}"
-- "remove auto approve {tool}"
+---
 
 ## Mode Definitions
 
 ### AUTO Mode
 - **Description**: All tool calls auto-approved, zero user confirmation
-- **Permissions**: `permissions.allow: ["*"]`
-- **Config file**: `.claude/settings.local.json`
 - **Use case**: Mature workflows, batch processing, trusted environment
 
 ### TEST Mode
-- **Description**: Almost all tool calls require confirmation
-- **Permissions**:
-  - `permissions.allow: ["Read", "Glob", "Grep"]`
-  - `permissions.deny: ["*"]`
-- **Config file**: `.claude/settings.local.json`
-- **Use case**: Debugging, new workflow validation, security-sensitive
+- **Description**: Only read-only tools auto-approved, everything else requires confirmation
+- **Use case**: Debugging, new workflow validation, security-sensitive tasks
 
 ### SUPERVISED Mode
-- **Description**: User-customizable allow/deny lists
-- **Permissions**:
-  - `permissions.allow`: Read, Write, Edit, Glob, Grep, WebSearch, `WebFetch(domain:*)`, `Bash(python:*)`, `Bash(git:*)`, `Bash(npm:*)`, `Bash(mkdir:*)`, `Bash(ls:*)`, `Bash(cp:*)`
-  - `permissions.deny`: `Bash(rm -rf:*)`, `Bash(git push --force:*)`
-- **Customizable**: Yes — users can add/remove individual tool patterns
-- **Config file**: `.claude/settings.local.json`
+- **Description**: Balanced permissions from `config/plugin_config.yaml` defaults or user backup
 - **Use case**: Daily production, balance efficiency and safety
+
+---
 
 ## Execution Logic
 
-### On Startup
-```
-1. Read .claude/settings.local.json (permissions.allow / permissions.deny)
-2. Read .claude/mode_state.json (current mode name)
-3. Display current mode to user
+### Show Current Mode
+
+1. Read `.claude/settings.local.json`
+2. Check `permissions.allow` contents:
+   - Contains bare `"Bash"` (no pattern) → **AUTO**
+   - Contains only `["Read", "Glob", "Grep"]` → **TEST**
+   - Otherwise → **SUPERVISED**
+3. Display current mode and brief summary
+
+### Switch to AUTO
+
+**Goal: Zero approval prompts for any tool call.**
+
+1. Read `.claude/settings.local.json`
+2. Save current `permissions` object to `.claude/mode_backup.json` as backup
+3. Replace `permissions` with:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "WebFetch",
+      "Agent",
+      "Skill",
+      "NotebookEdit",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "EnterWorktree",
+      "TaskCreate",
+      "TaskUpdate",
+      "TaskList",
+      "TaskGet",
+      "AskUserQuestion",
+      "ToolSearch",
+      "ListMcpResourcesTool",
+      "ReadMcpResourceTool"
+    ],
+    "deny": []
+  }
+}
 ```
 
-### On Mode Switch
-```
-1. Load target mode permission template
-2. Write permissions.allow / permissions.deny to .claude/settings.local.json
-3. Save current mode name to .claude/mode_state.json
-4. Notify user
+4. Keep all other fields in `settings.local.json` unchanged
+5. Confirm: "AUTO mode activated. All tool calls auto-approved."
+
+### Switch to TEST
+
+**Goal: Maximum confirmation — only read-only tools pass through.**
+
+1. Read `.claude/settings.local.json`
+2. Save current `permissions` object to `.claude/mode_backup.json` as backup
+3. Replace `permissions` with:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "deny": []
+  }
+}
 ```
 
-### On Permission Modify (SUPERVISED only)
-```
-1. Verify current mode is SUPERVISED
-2. Parse tool name and pattern
-3. Update permissions.allow or permissions.deny list in .claude/settings.local.json
-4. Sync mode_state.json
-5. Notify user
+4. Keep all other fields unchanged
+5. Confirm: "TEST mode activated. Only Read/Glob/Grep auto-approved."
+
+### Switch to SUPERVISED
+
+1. Check if `.claude/mode_backup.json` exists
+   - **Yes** → Read backup, restore `permissions` to `.claude/settings.local.json`
+   - **No** → Load defaults from `config/plugin_config.yaml` `supervised_defaults` section, or use fallback:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "WebSearch",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)"
+    ],
+    "deny": []
+  }
+}
 ```
 
-## Tool Pattern Syntax
+2. Delete `.claude/mode_backup.json` after restore
+3. Confirm: "SUPERVISED mode activated. Dangerous operations require confirmation."
 
-```
-Read                    # All Read operations
-Bash                    # All Bash operations
-Bash(git *)             # Git-related commands
-Bash(git status)        # Specific command
-Bash(npm *)             # NPM-related commands
-Edit(*.md)              # Edit markdown files
-Edit(src/**/*.ts)       # Edit ts files in src
-Write(output/*)         # Write to output directory
-```
+---
 
-## Message Templates
+## Key Insight: Bare Tool Names vs Patterns
 
-Uses `messages/{language}.json` keys:
-- `mode_control.current`
-- `mode_control.switched`
-- `mode_control.auto_desc`
-- `mode_control.test_desc`
-- `mode_control.supervised_desc`
-- `mode_control.permission_added`
-- `mode_control.permission_removed`
+**CRITICAL**: AUTO mode uses bare tool names (`"Bash"` not `"Bash(git *)"`) to match ALL invocations of that tool. Pattern-based entries like `"Bash(git status:*)"` require exact matches and will NOT auto-approve other commands.
+
+- `"Bash"` → matches ANY bash command (auto-approve all)
+- `"Bash(git status:*)"` → matches ONLY `git status` commands
+
+This is why AUTO mode must use bare names, and SUPERVISED mode uses patterns for granular control.
+
+---
+
+## Important Notes
+
+- Changes to `.claude/settings.local.json` take effect immediately in the current session
+- The git-guard hook may still intercept `git commit`/`git push` separately — this is by design for safety
+- Projects can add MCP tool permissions to the AUTO list as needed (e.g., `"mcp__clipboard__read"`)
+- SUPERVISED defaults can be customized per-project via `config/plugin_config.yaml`

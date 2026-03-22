@@ -1,8 +1,8 @@
 ---
 name: git-guard
-version: "1.0.0"
-description: Prevent unauthorized git operations and require user confirmation for commits and pushes. Intercepts git commit/push commands via PreToolUse hook.
-user-invocable: true
+version: "2.0.0"
+description: "Prevent destructive git operations via PreToolUse hook. Blocks reset --hard, clean -f, checkout --, restore ., and filter-repo --force."
+user-invocable: false
 allowed-tools:
   - Read
   - Bash
@@ -10,79 +10,70 @@ allowed-tools:
   - Grep
 ---
 
-# Git Guard - Git Operation Protection
+# Git Guard - Destructive Git Operation Protection
 
-Prevent unauthorized git operations and require user confirmation for commits and pushes.
+Blocks destructive git commands before they execute via a PreToolUse hook script.
 
-## Trigger Conditions
+## What It Blocks
 
-- Hook intercepts git commit/push commands
-- User natural language confirmation/rejection
-- User calls `/commit` command
+| Command | Why | Suggested Alternative |
+|---------|-----|----------------------|
+| `git filter-repo --force` | Rewrites history + purges reflog | `git stash` → `git filter-repo` (no --force) → `git stash pop` |
+| `git reset --hard` | Discards all uncommitted changes permanently | `git stash` → `git reset --hard` → `git stash pop` |
+| `git clean -f` | Deletes untracked files permanently | `git stash` → `git clean` → `git stash pop` |
+| `git checkout -- .` | Overwrites all working tree files | `git stash` → run command → `git stash pop` |
+| `git restore .` | Overwrites all working tree files | `git stash` → run command → `git stash pop` |
 
-## Natural Language Understanding
+## How It Works
 
-### Confirm (zh)
-- "提交"
-- "commit"
-- "是"
-- "确认"
-- "好的"
-- "可以"
+The hook script `guard-git.sh` runs as a **PreToolUse** hook on every `Bash` tool call. It reads the command from stdin and pattern-matches against known destructive git commands. If matched, it prints a `BLOCKED:` message with a safe alternative and exits 1 to prevent execution.
 
-### Confirm (en)
-- "commit"
-- "yes"
-- "confirm"
-- "ok"
-- "go ahead"
+Non-matching commands pass through (exit 0).
 
-### Reject (zh)
-- "不要"
-- "取消"
-- "算了"
-- "不提交"
+## Installation
 
-### Reject (en)
-- "no"
-- "cancel"
-- "don't"
-- "abort"
+### Option 1: Copy the hook script
 
-## Blocked Actions
+Copy `guard-git.sh` to your project's `.claude/hooks/` directory:
 
-| Action | Behavior | Override |
-|--------|----------|----------|
-| git commit | Require confirmation | User confirms |
-| git push | Require confirmation | User confirms |
-| git push --force | Blocked | User explicitly requests |
-| git reset --hard | Blocked | User explicitly requests |
-| git rebase -i | Blocked | Not supported |
-
-## Execution Logic
-
-```
-1. Receive Hook intercept signal
-2. Display pending changes to user
-3. Ask for confirmation
-4. Wait for user natural language response
-5. If confirmed -> Execute git command
-6. If rejected -> Cancel operation
+```bash
+cp workflow-utilities/git-guard/guard-git.sh .claude/hooks/guard-git.sh
 ```
 
-## Commit Format
+### Option 2: Reference from plugin path
 
+Point directly to the plugin's script (if installed as a plugin):
+
+```json
+"command": "bash workflow-utilities/git-guard/guard-git.sh"
 ```
-[Module] Change description
 
-Co-Authored-By: Claude <noreply@anthropic.com>
+### Register in settings.json
+
+Add to your project's `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/guard-git.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
-## Message Templates
+## Design Notes
 
-Uses `messages/{language}.json` keys:
-- `git_guard.blocked`
-- `git_guard.confirm_prompt`
-- `git_guard.confirmed`
-- `git_guard.rejected`
-- `git_guard.force_blocked`
+- **No overrides via flags** — the hook always blocks. The user must explicitly run the safe alternative.
+- **Lightweight** — pure bash, no dependencies, runs in < 100ms.
+- **Composable** — works alongside other PreToolUse hooks. Each hook is independent.
+- The `/commit` command workflow handles `git commit` and `git push` through a separate confirmation flow, not through this hook.

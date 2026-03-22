@@ -1,24 +1,45 @@
 {
   "git_guard": {
-    "blocked": "Git 操作被拦截",
-    "confirm_prompt": "是否提交这些更改？",
-    "confirmed": "已提交",
-    "rejected": "好的，暂不提交",
-    "force_blocked": "禁止强制推送（除非明确请求）",
-    "hard_reset_blocked": "禁止硬重置（除非明确请求）"
+    "blocked": "已拦截：检测到危险 git 操作",
+    "reset_hard_blocked": "已拦截：git reset --hard 会永久丢弃所有未提交的更改",
+    "clean_blocked": "已拦截：git clean -f 会永久删除未跟踪的文件",
+    "checkout_blocked": "已拦截：git checkout -- . / git restore . 会丢弃所有工作区更改",
+    "filter_repo_blocked": "已拦截：git filter-repo --force 会覆盖工作区并清除 reflog",
+    "safe_alternative": "安全方式：git stash → 执行命令 → git stash pop"
   },
   "mode_control": {
     "current": "当前模式：{mode}",
     "switched": "已切换到 {mode} 模式",
-    "auto_desc": "全自动模式 - 所有工具调用自动批准",
-    "test_desc": "测试模式 - 几乎所有工具调用需要确认",
-    "supervised_desc": "监督模式 - 用户自定义权限配置",
+    "auto_desc": "AUTO 模式 — 所有工具调用自动批准，无需确认",
+    "test_desc": "TEST 模式 — 仅 Read/Glob/Grep 自动批准，其余均需确认",
+    "supervised_desc": "SUPERVISED 模式 — 使用配置或用户备份的平衡权限",
     "permission_added": "已将 {tool} 添加到自动批准列表",
     "permission_removed": "已将 {tool} 移至需确认列表",
     "permission_list_header": "当前权限配置：",
     "auto_approve_label": "自动批准",
     "require_confirm_label": "需要确认",
     "only_supervised": "权限修改仅在 SUPERVISED 模式下可用"
+  },
+  "plan": {
+    "collect_params": "请提供以下信息（不适用的可跳过）：",
+    "extracted_params": "已从对话中提取参数：",
+    "feedback_prompt": "计划已就绪。有修改意见？（输入「确认」保存）",
+    "saved": "计划已保存：{path}",
+    "progress_updating": "正在更新进度：{path}",
+    "progress_updated": "进度已更新：{path}",
+    "no_plans": "未找到 .claude/docs/plan/ 中的计划文件",
+    "max_iterations": "已达到最大反馈次数。是否保存当前版本？"
+  },
+  "handoff": {
+    "summary": "交接：\"{task}\" | 状态：{status} | 文件：{path}",
+    "created": "交接文档已创建：{path}",
+    "latest": "最新交接文档：{path}",
+    "no_handoffs": "未找到 .claude/docs/handoff/ 中的交接文件"
+  },
+  "plan_loader": {
+    "resuming_handoff": "从交接文档恢复：{path}",
+    "resuming_plan": "从计划开始实施：{path}",
+    "no_context": "未找到活跃的交接文档或已批准的计划"
   },
   "ticket": {
     "list_header": "当前待处理任务：",
