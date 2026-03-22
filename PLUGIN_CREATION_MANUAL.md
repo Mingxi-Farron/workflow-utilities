@@ -67,6 +67,7 @@ File: `.claude-plugin/marketplace.json`
 
 ### Schema (Required Fields)
 
+**Self-contained plugin (most common — plugin lives in marketplace repo):**
 ```json
 {
   "name": "marketplace-name",
@@ -83,10 +84,33 @@ File: `.claude-plugin/marketplace.json`
         "name": "Author Name",
         "email": "author@example.com"
       },
-      "source": {
-        "source": "github",
-        "repo": "username/repo-name"
-      }
+      "source": "./"
+    }
+  ]
+}
+```
+
+**Multi-plugin marketplace (plugins in separate repos):**
+```json
+{
+  "name": "marketplace-name",
+  "description": "Marketplace description",
+  "owner": {
+    "name": "Owner Name",
+    "email": "owner@example.com"
+  },
+  "plugins": [
+    {
+      "name": "plugin-a",
+      "description": "Plugin A",
+      "author": { "name": "Author", "email": "author@example.com" },
+      "source": { "source": "github", "repo": "username/plugin-a" }
+    },
+    {
+      "name": "plugin-b",
+      "description": "Plugin B",
+      "author": { "name": "Author", "email": "author@example.com" },
+      "source": { "source": "github", "repo": "username/plugin-b" }
     }
   ]
 }
@@ -108,13 +132,19 @@ File: `.claude-plugin/marketplace.json`
 | `name` | string | Yes | **kebab-case only** (e.g., `my-plugin`, NOT `My Plugin`) |
 | `description` | string | Yes | Plain text |
 | `author` | object | Yes | Must have `name` and `email` |
-| `source` | object | Yes | See source formats below |
+| `source` | string or object | Yes | `"./"` for self-contained, or GitHub object. See below |
 | `version` | string | No | Semver format |
 | `category` | string | No | e.g., "development" |
 
 ### Source Field Format
 
-**For GitHub-hosted plugins (required for custom marketplaces):**
+**Self-contained plugin (marketplace repo IS the plugin):**
+```json
+"source": "./"
+```
+Use this when the plugin files live in the same repo as `marketplace.json`. This is the most common pattern for single-plugin repos.
+
+**Separate GitHub repo (marketplace lists plugins from other repos):**
 ```json
 "source": {
   "source": "github",
@@ -125,8 +155,7 @@ File: `.claude-plugin/marketplace.json`
 ### Invalid Keys (Will Cause Errors)
 
 - `id` - Not recognized, do not use
-- `path` - Not recognized, use `source` object instead
-- `"source": "."` or `"source": "./"` - Invalid string format
+- `path` - Not recognized, use `source` field instead
 
 ---
 
@@ -196,6 +225,8 @@ Commands and skills are auto-discovered from their respective directories.
 ## Command Files
 
 File: `commands/{command-name}.md`
+
+Commands are namespaced by plugin name. For a plugin named `my-plugin`, `commands/status.md` creates the slash command `/my-plugin:status`.
 
 ### Required YAML Frontmatter
 
@@ -413,6 +444,17 @@ Add to project's `.claude/settings.local.json`:
 
 ---
 
+## Environment Variables
+
+Available in hook scripts and plugin commands:
+
+| Variable | Description |
+|----------|-------------|
+| `${CLAUDE_PLUGIN_ROOT}` | Absolute path to the plugin's installed directory. Changes on update. |
+| `${CLAUDE_PLUGIN_DATA}` | Persistent data directory (`~/.claude/plugins/data/{id}/`). Survives updates. |
+
+---
+
 ## Cache Management
 
 Claude Code caches plugins at:
@@ -426,6 +468,28 @@ Claude Code caches plugins at:
 rm -rf ~/.claude/plugins/cache/{marketplace-name}
 rm -rf ~/.claude/plugins/marketplaces/{marketplace-name}
 ```
+
+### Full Uninstall (Remove All Traces)
+
+Plugin registration can exist in **multiple locations**. To fully uninstall, check ALL of these:
+
+```bash
+# 1. Global settings
+~/.claude/settings.json              # enabledPlugins, extraKnownMarketplaces
+
+# 2. Project-level settings (in EVERY project that used the plugin)
+{project}/.claude/settings.local.json  # enabledPlugins, extraKnownMarketplaces
+
+# 3. Plugin registry
+~/.claude/plugins/installed_plugins.json   # Remove plugin entry
+~/.claude/plugins/known_marketplaces.json  # Remove marketplace entry
+
+# 4. Cache and marketplace data
+~/.claude/plugins/cache/{marketplace-name}/
+~/.claude/plugins/marketplaces/{marketplace-name}/
+```
+
+**Common pitfall:** Clearing global settings but forgetting project-level `settings.local.json` — the plugin will still try to load when opening that project.
 
 Then restart Claude Code.
 
@@ -468,7 +532,9 @@ grep -i "plugin\|error\|failed\|invalid" ~/.claude/debug/{latest}.txt
 |-------|-------|----------|
 | `owner: expected object, received undefined` | Missing `owner` field in marketplace.json | Add `owner` with `name` and `email` |
 | `Plugin name cannot contain spaces` | Name has spaces | Use kebab-case: `my-plugin` |
-| `source: Invalid input` | Wrong source format | Use object: `{"source": "github", "repo": "..."}` |
+| `source: Invalid input` | Wrong source format | Use `"./"` for self-contained, or `{"source": "github", "repo": "..."}` for separate repos |
+| `Plugin 'X' not found in marketplace 'Y'` | Self-contained plugin uses GitHub source instead of `"./"` | Change `plugins[].source` to `"./"` in marketplace.json |
+| Plugin loads but still shows error after uninstall | Residual config in project-level `settings.local.json` | Check ALL project dirs for `enabledPlugins` entries |
 | `Unrecognized keys: "id", "path"` | Invalid fields in marketplace.json | Remove `id`, use `source` object |
 | `description: expected string, received object` | Localized description object in plugin.json | Use plain string |
 | `author: expected object, received string` | Author as string in plugin.json | Use object with name/email |
@@ -493,7 +559,7 @@ grep -i "plugin\|error\|failed\|invalid" ~/.claude/debug/{latest}.txt
    - `version`: semver
 3. Write `marketplace.json`:
    - `owner`: object with name/email
-   - `plugins[].source`: GitHub object format
+   - `plugins[].source`: `"./"` for self-contained, or GitHub object for separate repos
 4. Create `commands/*.md` with YAML frontmatter:
    - `description`: required
    - `argument-hint`: if has arguments
@@ -537,7 +603,7 @@ grep -i "plugin\|error\|failed\|invalid" ~/.claude/debug/{latest}.txt
 
 ## Quick Reference: Valid Schemas
 
-### marketplace.json
+### marketplace.json (self-contained)
 ```json
 {
   "name": "my-marketplace",
@@ -547,7 +613,7 @@ grep -i "plugin\|error\|failed\|invalid" ~/.claude/debug/{latest}.txt
     "name": "my-plugin",
     "description": "Description",
     "author": { "name": "Name", "email": "email@example.com" },
-    "source": { "source": "github", "repo": "user/repo" }
+    "source": "./"
   }]
 }
 ```
@@ -582,6 +648,7 @@ argument-hint: "[arg1] [arg2]"
 |---------|------|---------|
 | 1.0.0 | 2026-01-15 | Initial creation based on troubleshooting session |
 | 1.1.0 | 2026-03-22 | Fix skills format: `skills/{name}.md` → `skills/{name}/SKILL.md`; fix hooks.json schema to event-keyed object; add SKILL.md frontmatter docs; expand hook events list |
+| 1.2.0 | 2026-03-22 | Fix source field: document `"./"` for self-contained plugins; add command namespacing; add env vars section; add full uninstall SOP; add new troubleshooting entries |
 
 ---
 
