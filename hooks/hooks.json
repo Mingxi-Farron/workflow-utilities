@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/guard-git.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Block destructive git commands (reset --hard, clean -f, checkout --, restore .)"
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/plan-loader.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Auto-inject handoff/plan context in impl sessions (CLAUDE_SESSION_TYPE=impl)"
+      }
+    ]
+  }
+}

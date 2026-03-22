@@ -1,6 +1,6 @@
 {
   "name": "workflow-utilities",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Workflow utilities: Git guard, mode control, plan & handoff, ticket management, task execution, roundtable investigation",
   "author": {
     "name": "Mingxi-Farron",

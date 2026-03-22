@@ -48,7 +48,7 @@ If neither a handoff nor a plan is found, the hook exits silently (no context in
 Copy `plan-loader.sh` to your project's `.claude/hooks/` directory:
 
 ```bash
-cp workflow-utilities/plan-loader/plan-loader.sh .claude/hooks/plan-loader.sh
+cp workflow-utilities/scripts/plan-loader.sh .claude/hooks/plan-loader.sh
 ```
 
 Register in `.claude/settings.json`:

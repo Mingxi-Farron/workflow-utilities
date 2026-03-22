@@ -37,7 +37,7 @@ Non-matching commands pass through (exit 0).
 Copy `guard-git.sh` to your project's `.claude/hooks/` directory:
 
 ```bash
-cp workflow-utilities/git-guard/guard-git.sh .claude/hooks/guard-git.sh
+cp workflow-utilities/scripts/guard-git.sh .claude/hooks/guard-git.sh
 ```
 
 ### Option 2: Reference from plugin path
@@ -45,7 +45,7 @@ cp workflow-utilities/git-guard/guard-git.sh .claude/hooks/guard-git.sh
 Point directly to the plugin's script (if installed as a plugin):
 
 ```json
-"command": "bash workflow-utilities/git-guard/guard-git.sh"
+"command": "bash workflow-utilities/scripts/guard-git.sh"
 ```
 
 ### Register in settings.json

@@ -46,7 +46,8 @@ plugin-name/
 ├── commands/
 │   └── command-name.md     # Slash command definitions (with YAML frontmatter)
 ├── skills/
-│   └── skill-name.md       # Skill definitions
+│   └── skill-name/
+│       └── SKILL.md         # Skill definition (directory-based format)
 ├── hooks/
 │   └── hooks.json          # Hook configurations
 ├── scripts/
@@ -251,23 +252,47 @@ argument-hint: ""
 
 ## Skill Files
 
-File: `skills/{skill-name}.md`
+Directory: `skills/{skill-name}/SKILL.md`
 
-Skills are markdown files with instructions for Claude. They are invoked internally by commands or hooks.
+Each skill is a **directory** containing a `SKILL.md` file. The directory name becomes the skill name. For a plugin named `my-plugin`, `skills/hello/SKILL.md` creates the slash command `/my-plugin:hello`.
 
-### Example Structure
+Skills can optionally include supporting files (scripts, templates, reference docs) alongside SKILL.md.
+
+### SKILL.md Format
 
 ```markdown
-# Skill Name
+---
+name: skill-name
+description: "What this skill does. Use when [trigger conditions]."
+---
 
-## Purpose
-What this skill does.
+# Skill Name
 
 ## Instructions
 Step-by-step instructions for Claude to follow.
 
 ## Output Format
 Expected output format.
+```
+
+### Frontmatter Fields
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `name` | string | Yes | Must match directory name |
+| `description` | string | Yes | Shown in help/autocomplete; include trigger conditions |
+| `user-invocable` | boolean | No | Set `false` for internal-only skills (hooks) |
+
+### Directory Structure Example
+
+```
+skills/
+├── code-review/
+│   └── SKILL.md
+├── handoff/
+│   └── SKILL.md
+└── git-guard/
+    └── SKILL.md
 ```
 
 ---
@@ -278,23 +303,31 @@ File: `hooks/hooks.json`
 
 ### Schema
 
+Uses the same format as Claude Code settings hooks (event-keyed object, not a flat array):
+
 ```json
 {
-  "hooks": [
-    {
-      "event": "PreToolUse",
-      "matcher": {
-        "tool_name": "Bash"
-      },
-      "handler": {
-        "type": "command",
-        "command": "scripts/handler.sh"
-      },
-      "description": "Hook description"
-    }
-  ]
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/handler.sh",
+            "timeout": 5
+          }
+        ],
+        "description": "Hook description"
+      }
+    ]
+  }
 }
 ```
+
+Use `${CLAUDE_PLUGIN_ROOT}` to reference scripts bundled with the plugin.
+
+**IMPORTANT:** Do NOT declare `hooks/hooks.json` in `plugin.json` — it is auto-loaded by convention. Only declare additional hook files in `plugin.json`.
 
 ### Hook Events
 
@@ -302,6 +335,9 @@ File: `hooks/hooks.json`
 |-------|---------|
 | `PreToolUse` | Before a tool is executed |
 | `PostToolUse` | After a tool is executed |
+| `SessionStart` | New session, `/clear`, or compaction |
+| `UserPromptSubmit` | Before user prompt is processed |
+| `Stop` | When session ends |
 
 ### Handler Script Output
 
@@ -327,7 +363,7 @@ Scripts must output JSON to stdout:
    - `.claude-plugin/plugin.json`
 3. Add plugin components:
    - `commands/*.md` (with YAML frontmatter)
-   - `skills/*.md`
+   - `skills/*/SKILL.md`
    - `hooks/hooks.json` (if using hooks)
    - `scripts/*.sh` (if using hook scripts)
 
@@ -461,7 +497,7 @@ grep -i "plugin\|error\|failed\|invalid" ~/.claude/debug/{latest}.txt
 4. Create `commands/*.md` with YAML frontmatter:
    - `description`: required
    - `argument-hint`: if has arguments
-5. Create `skills/*.md`
+5. Create `skills/{name}/SKILL.md` with YAML frontmatter (`name`, `description`)
 6. Create `hooks/hooks.json` if needed
 7. Test locally first
 8. Push to GitHub
@@ -545,7 +581,8 @@ argument-hint: "[arg1] [arg2]"
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0.0 | 2026-01-15 | Initial creation based on troubleshooting session |
+| 1.1.0 | 2026-03-22 | Fix skills format: `skills/{name}.md` → `skills/{name}/SKILL.md`; fix hooks.json schema to event-keyed object; add SKILL.md frontmatter docs; expand hook events list |
 
 ---
 
-*Generated from troubleshooting session. Last updated: 2026-01-15*
+*Last updated: 2026-03-22*
