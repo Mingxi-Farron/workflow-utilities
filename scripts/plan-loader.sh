@@ -1,28 +1,15 @@
 #!/bin/bash
 # Plan auto-resume — only for impl sessions
-# Claude Code SessionStart hook — injects plan/handoff context on session start
-#
-# Requires: CLAUDE_SESSION_TYPE=impl environment variable
-# Without it, this hook does nothing (exit 0).
-#
-# Usage in .claude/settings.json:
-#   "SessionStart": [{
-#     "matcher": "",
-#     "hooks": [{
-#       "type": "command",
-#       "command": "bash .claude/hooks/plan-loader.sh",
-#       "timeout": 5
-#     }]
-#   }]
+# Triggered by: SessionStart (new session, /clear, compaction)
 
 # ── Gate 1: Session type check ──
 if [ "$CLAUDE_SESSION_TYPE" != "impl" ]; then
   exit 0
 fi
 
-# ── Gate 2: Find latest in-progress handoff ──
+# ── Gate 2: Find latest active handoff (in-progress or NOT STARTED) ──
 HANDOFF=$(ls -1t .claude/docs/handoff/*.md 2>/dev/null | while read f; do
-  if grep -q '^\*\*Status:\*\* in-progress' "$f"; then
+  if grep -qE '^\*\*Status:\*\* (in-progress|NOT STARTED)' "$f"; then
     echo "$f"; break
   fi
 done)

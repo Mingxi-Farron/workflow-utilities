@@ -27,9 +27,9 @@ Only activates when `CLAUDE_SESSION_TYPE=impl`. Without this environment variabl
 CLAUDE_SESSION_TYPE=impl claude
 ```
 
-### Gate 2: In-Progress Handoff
+### Gate 2: Active Handoff (in-progress or NOT STARTED)
 
-Searches `.claude/docs/handoff/*.md` for the most recent file with `**Status:** in-progress`. If found:
+Searches `.claude/docs/handoff/*.md` for the most recent file with `**Status:** in-progress` or `**Status:** NOT STARTED`. If found:
 - Injects the full handoff contents via `<impl-session>` tag
 - Instructs Claude to read the referenced plan file, then continue from Next Steps
 
@@ -98,6 +98,6 @@ CLAUDE_SESSION_TYPE=impl claude  (next session)
 ## Design Notes
 
 - **Zero noise** — does nothing in normal sessions (no `CLAUDE_SESSION_TYPE`)
-- **Handoff priority** — handoffs take precedence over plans (Gate 2 before Gate 3), because a handoff represents the most recent state
+- **Handoff priority** — handoffs take precedence over plans (Gate 2 before Gate 3), matching both `in-progress` and `NOT STARTED` statuses
 - **Summary injection** — for plans, only injects step headings and criteria (not full content), keeping the context tag compact. Claude reads the full file via the Read tool.
 - **Idempotent** — safe to re-trigger on `/clear` or compaction; always reads the latest state from disk
